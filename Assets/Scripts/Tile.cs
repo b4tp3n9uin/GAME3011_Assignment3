@@ -8,6 +8,7 @@ public sealed class Tile : MonoBehaviour
     public int x;
     public int y;
 
+    [SerializeField]
     private Item _item;
 
     public Item Item
@@ -26,4 +27,6 @@ public sealed class Tile : MonoBehaviour
     public Image icon;
 
     public Button button;
+
+    private void Start() => button.onClick.AddListener(()=> Board.Instance.Select(this));
 }
