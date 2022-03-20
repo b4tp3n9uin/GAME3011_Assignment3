@@ -75,6 +75,15 @@ public class Board : MonoBehaviour
 
         await Swap(_selection[0], _selection[1]);
 
+        if (CanPop())
+        {
+            Pop();
+        }
+        else
+        {
+            await Swap(_selection[0], _selection[1]);
+        }
+
         _selection.Clear();
     }
 
@@ -107,11 +116,50 @@ public class Board : MonoBehaviour
 
     private bool CanPop()
     {
-        throw new System.NotImplementedException();
+        for (int y = 0; y < Height; y++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                if (Tiles[x, y].GetConnectedTiles().Skip(1).Count() >= 2)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
-    private void Pop()
+    private async void Pop()
     {
-        throw new System.NotImplementedException();
+        for (var y = 0; y < Height; y++)
+        {
+            for (var x = 0; x < Width; x++)
+            {
+                var tile = Tiles[x, y];
+
+                var connectedTiles = tile.GetConnectedTiles();
+
+                if (connectedTiles.Skip(1).Count() < 2) continue;
+
+                var deflateSequence = DOTween.Sequence();
+
+                foreach (var connectedTile in connectedTiles)
+                {
+                    deflateSequence.Join(connectedTile.icon.transform.DOScale(Vector3.zero, tweenDuration));
+                }
+
+                await deflateSequence.Play().AsyncWaitForCompletion();
+
+                var inflateSequence = DOTween.Sequence();
+
+                foreach (var connectedTile in connectedTiles)
+                {
+                    connectedTile.Item = items[Random.Range(0, items.Length)];
+
+                    inflateSequence.Join(connectedTile.icon.transform.DOScale(Vector3.one, tweenDuration));
+                }
+
+                await inflateSequence.Play().AsyncWaitForCompletion();
+            }
+        }
     }
 }
