@@ -52,6 +52,17 @@ public class Board : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (!Input.GetKeyDown(KeyCode.A)) return;
+
+        foreach (var conncectedTile in Tiles[0, 0].GetConnectedTiles())
+        {
+            conncectedTile.icon.transform.DOScale(1.25f, tweenDuration).Play();
+        }
+    }
+    
+
     public async void Select(Tile tile)
     {
         if (!_selection.Contains(tile))
@@ -92,5 +103,15 @@ public class Board : MonoBehaviour
 
         tile1.Item = tile2.Item;
         tile2.Item = tile1Item;
+    }
+
+    private bool CanPop()
+    {
+        throw new System.NotImplementedException();
+    }
+
+    private void Pop()
+    {
+        throw new System.NotImplementedException();
     }
 }
