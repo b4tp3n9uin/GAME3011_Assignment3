@@ -9,6 +9,9 @@ public class Board : MonoBehaviour
 {
     public static Board Instance { get; private set; }
 
+    public AudioClip matchSound;
+    public AudioSource audioSource;
+
     public Row[] rows;
 
     public Tile[,] Tiles { get; private set; }
@@ -29,6 +32,21 @@ public class Board : MonoBehaviour
 
     private void Start()
     {
+        Shuffle();
+    }
+
+    private void Update()
+    {
+        if (!Input.GetKeyDown(KeyCode.A)) return;
+
+        foreach (var conncectedTile in Tiles[0, 0].GetConnectedTiles())
+        {
+            conncectedTile.icon.transform.DOScale(1.25f, tweenDuration).Play();
+        }
+    }
+
+    private void Shuffle()
+    {
         Tiles = new Tile[rows.Max(row => row.tiles.Length), rows.Length];
 
         for (var y = 0; y < Height; y++)
@@ -47,27 +65,37 @@ public class Board : MonoBehaviour
 
                 Tiles[x, y] = tile;
 
-                
+
             }
         }
-    }
 
-    private void Update()
-    {
-        if (!Input.GetKeyDown(KeyCode.A)) return;
-
-        foreach (var conncectedTile in Tiles[0, 0].GetConnectedTiles())
-        {
-            conncectedTile.icon.transform.DOScale(1.25f, tweenDuration).Play();
-        }
+        Pop();
     }
     
 
     public async void Select(Tile tile)
     {
         if (!_selection.Contains(tile))
-            _selection.Add(tile);
+        {
+            if (_selection.Count > 0)
+            {
+                if (System.Array.IndexOf(_selection[0].Neighbours, tile) != -1)
+                {
+                    _selection.Add(tile);
+                }
+                else
+                {
+                    return;
+                }
+                
+            }
+            else
+            {
+                _selection.Add(tile);
+            }
+        }
 
+        
         if (_selection.Count < 2)
             return;
 
@@ -78,10 +106,6 @@ public class Board : MonoBehaviour
         if (CanPop())
         {
             Pop();
-        }
-        else
-        {
-            await Swap(_selection[0], _selection[1]);
         }
 
         _selection.Clear();
@@ -147,6 +171,10 @@ public class Board : MonoBehaviour
                     deflateSequence.Join(connectedTile.icon.transform.DOScale(Vector3.zero, tweenDuration));
                 }
 
+                audioSource.PlayOneShot(matchSound);
+
+                ScoreCounter.Instance.Score += tile.Item.value * connectedTiles.Count;
+
                 await deflateSequence.Play().AsyncWaitForCompletion();
 
                 var inflateSequence = DOTween.Sequence();
@@ -159,6 +187,9 @@ public class Board : MonoBehaviour
                 }
 
                 await inflateSequence.Play().AsyncWaitForCompletion();
+
+                x = 0;
+                y = 0;
             }
         }
     }
