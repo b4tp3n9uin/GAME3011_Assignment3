@@ -5,6 +5,8 @@ using TMPro;
 
 public sealed class ScoreCounter : MonoBehaviour
 {
+    // Class for the current player's score
+
     public static ScoreCounter Instance { get; private set; }
 
     private int _score;

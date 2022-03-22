@@ -47,6 +47,7 @@ public class Board : MonoBehaviour
 
     private void Shuffle()
     {
+        // Shuffle the Board
         Tiles = new Tile[rows.Max(row => row.tiles.Length), rows.Length];
 
         for (var y = 0; y < Height; y++)
@@ -75,6 +76,7 @@ public class Board : MonoBehaviour
 
     public async void Select(Tile tile)
     {
+        // Selecting tiles
         if (!_selection.Contains(tile))
         {
             if (_selection.Count > 0)
@@ -113,6 +115,7 @@ public class Board : MonoBehaviour
 
     public async Task Swap(Tile tile1, Tile tile2)
     {
+        // Swap Tiles
         var icon1 = tile1.icon;
         var icon2 = tile2.icon;
 
@@ -140,6 +143,7 @@ public class Board : MonoBehaviour
 
     private bool CanPop()
     {
+        // Check if Tiles can pop, if they connect and match.
         for (int y = 0; y < Height; y++)
         {
             for (int x = 0; x < Width; x++)
@@ -154,6 +158,7 @@ public class Board : MonoBehaviour
 
     private async void Pop()
     {
+        // Pop the match connecting tiles
         for (var y = 0; y < Height; y++)
         {
             for (var x = 0; x < Width; x++)

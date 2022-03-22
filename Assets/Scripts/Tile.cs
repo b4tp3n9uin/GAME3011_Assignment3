@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public sealed class Tile : MonoBehaviour
 {
+    // Tile Class
+
     public int x;
     public int y;
 
@@ -45,6 +47,8 @@ public sealed class Tile : MonoBehaviour
 
     public List<Tile> GetConnectedTiles(List<Tile> exclude = null)
     {
+        // Check the neighbour tiles vertically and horizontally.
+
         var result = new List<Tile> { this, };
 
         if (exclude == null)
